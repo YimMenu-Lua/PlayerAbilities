@@ -22,122 +22,37 @@ local IncrementStat = function(stat, value)
   end
 end
 
+local pstats_t = {
+  {str = "Stamina",       stat_1 = "MPX_STAMINA",             stat_2 = "MPX_SCRIPT_INCREASE_STAM", incr_val = 1,   f = stats.get_int},
+  {str = "Shooting",      stat_1 = "MPX_SHOOTING_ABILITY",    stat_2 = "MPX_SCRIPT_INCREASE_SHO",  incr_val = 1,   f = stats.get_int},
+  {str = "Strength",      stat_1 = "MPX_STRENGTH",            stat_2 = "MPX_SCRIPT_INCREASE_STRN", incr_val = 1,   f = stats.get_int},
+  {str = "Stealth",       stat_1 = "MPX_STEALTH_ABILITY",     stat_2 = "MPX_SCRIPT_INCREASE_STL",  incr_val = 1,   f = stats.get_int},
+  {str = "Flying",        stat_1 = "MPX_FLYING_ABILITY",      stat_2 = "MPX_SCRIPT_INCREASE_FLY",  incr_val = 1,   f = stats.get_int},
+  {str = "Driving",       stat_1 = "MPX_WHEELIE_ABILITY",     stat_2 = "MPX_SCRIPT_INCREASE_DRIV", incr_val = 1,   f = stats.get_int},
+  {str = "Lung Capacity", stat_1 = "MPX_LUNG_CAPACITY",       stat_2 = "MPX_SCRIPT_INCREASE_LUNG", incr_val = 1,   f = stats.get_int},
+  {str = "Mental State",  stat_1 = "MPX_PLAYER_MENTAL_STATE", stat_2 = "MPX_PLAYER_MENTAL_STATE",  incr_val = 1.0, f = stats.get_float},
+}
+
 local PlayerAbilitiesTab = gui.get_tab("GUI_TAB_NETWORK"):add_tab("Player Abilities")
 PlayerAbilitiesTab:add_imgui(function()
   if IsOnline() then
-    local stamina  = stats.get_int("MPX_STAMINA")
-    local shooting = stats.get_int("MPX_SHOOTING_ABILITY")
-    local strength = stats.get_int("MPX_STRENGTH")
-    local stealth  = stats.get_int("MPX_STEALTH_ABILITY")
-    local flying   = stats.get_int("MPX_FLYING_ABILITY")
-    local driving  = stats.get_int("MPX_WHEELIE_ABILITY")
-    local swimming = stats.get_int("MPX_LUNG_CAPACITY")
-    local unhinged = stats.get_float("MPX_PLAYER_MENTAL_STATE")
     ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, 10, 20); ImGui.PushButtonRepeat(true)
-    ImGui.Text("Stamina")
-    if ImGui.Button(" - ##stam") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_STAM", -1)
-      end)
+    for k, v in ipairs(pstats_t) do
+      ImGui.Text(v.str)
+      ImGui.PushID(k)
+      if ImGui.Button(" - ") then
+        script.run_in_fiber(function()
+          IncrementStat(v.stat_2, - v.incr_val)
+        end)
+      end
+      ImGui.SameLine(); ImGui.ProgressBar((v.f(v.stat_1) / 100), 180, 30); ImGui.SameLine()
+      if ImGui.Button(" + ") then
+        script.run_in_fiber(function()
+          IncrementStat(v.stat_2, v.incr_val)
+        end)
+      end
+      ImGui.PopID()
     end
-    ImGui.SameLine(); ImGui.ProgressBar((stamina / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##stam") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_STAM", 1)
-      end)
-    end
-
-    ImGui.Text("Shooting")
-    if ImGui.Button(" - ##shoot") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_SHO", -1)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((shooting / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##shoot") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_SHO", 1)
-      end)
-    end
-
-    ImGui.Text("Strength")
-    if ImGui.Button(" - ##strn") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_STRN", -1)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((strength / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##strn") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_STRN", 1)
-      end)
-    end
-
-    ImGui.Text("Stealth")
-    if ImGui.Button(" - ##stealth") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_STL", -1)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((stealth / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##stealth") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_STL", 1)
-      end)
-    end
-
-    ImGui.Text("Flying")
-    if ImGui.Button(" - ##flying") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_FLY", -1)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((flying / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##flying") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_FLY", 1)
-      end)
-    end
-
-    ImGui.Text("Driving")
-    if ImGui.Button(" - ##driving") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_DRIV", -1)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((driving / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##driving") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_DRIV", 1)
-      end)
-    end
-
-    ImGui.Text("Lung Capacity")
-    if ImGui.Button(" - ##swimming") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_LUNG", -1)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((swimming / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##swimming") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_SCRIPT_INCREASE_LUNG", 1)
-      end)
-    end
-
-    ImGui.Text("Mental State")
-    if ImGui.Button(" - ##mental") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_PLAYER_MENTAL_STATE", -1.0)
-      end)
-    end
-    ImGui.SameLine(); ImGui.ProgressBar((unhinged / 100), 180, 30); ImGui.SameLine()
-    if ImGui.Button(" + ##mental") then
-      script.run_in_fiber(function()
-        IncrementStat("MPX_PLAYER_MENTAL_STATE", 1.0)
-      end)
-    end
-
     ImGui.PopButtonRepeat(); ImGui.PopStyleVar()
   else
     ImGui.Text("\nUnavailable in Single Player.")
