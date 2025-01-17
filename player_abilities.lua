@@ -9,17 +9,17 @@ end
 ---@param stat string
 ---@param value number
 local IncrementStat = function(stat, value)
-  local first = stats.get_int(stat)
+  local stat_get, stat_set
+  if math.type(value) == 'integer' then
+    stat_get, stat_set = stats.get_int, stats.set_int
+  elseif math.type(value) == 'float' then
+    stat_get, stat_set = stats.get_float, stats.set_float
+  end
+  local first = stat_get(stat)
   if (value < 0 and first == 0) or (value > 100 and first == 100) then
     return
   end
-  if math.type(value) == 'integer' then
-    stats.set_int(stat, (first + value))
-  elseif math.type(value) == 'float' then
-    stats.set_float(stat, (first + value))
-  else
-    return
-  end
+  stat_set(stat, (first + value))
 end
 
 local pstats_t = {
