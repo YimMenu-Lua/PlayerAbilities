@@ -10,7 +10,7 @@ end
 ---@param value number
 local IncrementStat = function(stat, value)
   local first = stats.get_int(stat)
-  if value < 0 and first == 0 then
+  if (value < 0 and first == 0) or (value > 100 and first == 100) then
     return
   end
   if math.type(value) == 'integer' then
